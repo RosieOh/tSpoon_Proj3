@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="winner">
+	<!-- 당첨자 게시판 목록 -->
+	<select id="winnerList" resultType="kr.co.teaspoon.dto.Winner">
+		select * from winner order by regdate desc
+	</select>
+	<!-- 글 상세보기 -->
+	<select id="winnerDetail" resultType="kr.co.teaspoon.dto.Winner">
+		select * from winner where bno=#{bno}
+	</select>
+<!--	&lt;!&ndash; 글 수 카운트 &ndash;&gt;-->
+<!--	<select id="totalCount" resultType="integer" >-->
+<!--		select count(*) from free-->
+<!--	</select>-->
+	<insert id="winnerInsert">
+		insert into winner values (default, #{title}, #{content}, default, 0, 'admin', 0)
+	</insert>
+	<delete id="winnerDelete">
+		delete from winner where bno=#{bno}
+	</delete>
+	<update id="winnerEdit">
+		update winner set title=#{title}, content=#{content} where bno=#{bno}
+	</update>
+	<update id="visitCount">
+		update winner set visited=visited+1 where bno=#{bno}
+	</update>
+</mapper>

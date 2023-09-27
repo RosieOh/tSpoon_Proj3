@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qna">
+<!--    공지사항 목록 출력-->
+    <select id="qnaList" resultType="kr.co.teaspoon.dto.Qna">
+        select * from qnalist1;
+    </select>
+<!--    공지사항 글 상세보기-->
+    <select id="qnaDetail" resultType="kr.co.teaspoon.dto.Qna">
+        select * from qnalist1 where qno=#{qno}
+    </select>
+<!--    글 수 카운트-->
+    <select id="totalCount" resultType="integer">
+        select count(*) from qnalist1
+    </select>
+<!--    공지사항 글 작성-->
+    <insert id="qnaInsert">
+        INSERT INTO qna(title, content, author, lev, par,secret) VALUES(#{title}, #{content}, #{author}, #{lev},#{par}, default);
+    </insert>
+
+<!--공지사항 글 업데이트-->
+    <update id="qnaInsertUpdate">
+        UPDATE qna SET par=qno WHERE lev=0 and par=0
+    </update>
+<!--    공지사항 글 삭제-->
+    <delete id="qnaDelete">
+        delete from qna where qno=#{qno}
+    </delete>
+<!--    공지사항 글 수정-->
+    <update id="qnaEdit">
+        update qna set title=#{title}, content=#{content} where qno=#{qno}
+    </update>
+<!--    조회수 증가-->
+    <update id="countUp">
+        update qna set visit = visit+1 where qno=#{qno}
+    </update>
+    <sql id="criteria">
+        <where>
+            <trim prefixOverrides="OR">
+                <foreach item="type" collection="typeArr">
+                    <trim prefixOverrides="OR">
+                        <choose>
+                            <when test="type == 'T'.toString()">
+                                title LIKE '%' || #{keyword} || '%'
+                            </when>
+                            <when test="type == 'C'.toString()">
+                                content LIKE '%' || #{keyword} || '%'
+                            </when>
+                            <when test="type == 'W'.toString()">
+                                name LIKE '%' || #{keyword} || '%'
+                            </when>
+                        </choose>
+                    </trim>
+                </foreach>
+            </trim>
+        </where>
+    </sql>
+    <select id="getListWithPaging" resultType="kr.co.teaspoon.dto.Board">
+        <![CDATA[
+        select * from qnalist1
+        ]]>
+        <include refid="criteria" />
+        <![CDATA[
+        ORDER BY regdate DESC LIMIT ((#{pageNum} - 1) * #{amount}), #{amount}
+        ]]>
+    </select>
+</mapper>

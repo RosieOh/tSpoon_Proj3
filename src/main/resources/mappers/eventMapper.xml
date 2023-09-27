@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="event">
+	<!-- 이벤트 게시판 목록 -->
+	<select id="eventList" resultType="kr.co.teaspoon.dto.Event">
+		select * from event order by regdate desc
+	</select>
+	<!-- 글 상세보기 -->
+	<select id="eventDetail" resultType="kr.co.teaspoon.dto.Event">
+		select * from event where bno=#{bno}
+	</select>
+<!--	&lt;!&ndash; 글 수 카운트 &ndash;&gt;-->
+<!--	<select id="totalCount" resultType="integer" >-->
+<!--		select count(*) from free-->
+<!--	</select>-->
+	<insert id="eventInsert">
+		insert into event values (default, #{title}, #{content}, default, 0, 'admin', 0)
+	</insert>
+	<delete id="eventDelete">
+		delete from event where bno=#{bno}
+	</delete>
+	<update id="eventEdit">
+		update event set title=#{title}, content=#{content} where bno=#{bno}
+	</update>
+	<update id="visitCount">
+		update event set visited=visited+1 where bno=#{bno}
+	</update>
+</mapper>

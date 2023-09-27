@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reco">
+    <insert id="recoSave">
+        insert into reco(id, bno) values(#{id}, #{bno})
+    </insert>
+
+    <update id="recoCheck">
+        update reco set flag = 1 where id=#{id} and bno=#{bno}
+    </update>
+
+    <update id="recoCancel">
+        update reco set flag = 0 where id=#{id} and bno=#{bno}
+    </update>
+<!--    <select id="findRec" resultType="kr.co.teaspoon.dto.Reco">
+        select * from reco where bno=#{bno} and id=#{id}
+    </select>
+
+    <select id="memberFindRec" resultType="kr.co.teaspoon.dto.Reco">
+        select * from reco where bno=#{bno} and id=#{id}
+    </select>
+
+    <insert id="insertRec">
+        insert into reco(bno, id, flag) values(#{bno}, #{id}, 1)
+    </insert>
+
+    <delete id="deleteRec" parameterType="rec">
+        delete from reco where bno=#{bno} and id=#{id}
+    </delete>
+
+    -->
+</mapper>

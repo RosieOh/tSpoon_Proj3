@@ -1,0 +1,160 @@
+.topNav {
+    border-top: 5px solid #3498DB;
+}
+.topNav .container {
+    border-bottom: 1px solid #E6EAEE;
+}
+.container .columns {
+    margin: 3rem 0;
+}
+
+.conwrap .box {
+    margin-bottom: 0;
+    padding: 1.5rem;
+}
+.conwrap .columns {
+    margin: 0;
+}
+.conwrap .column {
+    padding: 0.5rem 0.25rem;
+}
+.formwrap {
+    margin-top: 1rem;
+}
+.cmtwrap {
+    background-color: #ffffff;
+    border-radius: 6px;
+}
+.cmtwrap textarea {
+    background-color: #f6f6f9;
+}
+.cmtwrap .submission {
+    font-size: 16px;
+    height: 72px;
+    background-color: #2B3A55;
+    color: #ffffff;
+    font-weight: 700;
+}
+.cmtwrap .submission:hover {
+    color: #a2aec7;
+}
+
+.navbar-menu .navbar-item {
+    padding: 0 2rem;
+}
+aside.menu {
+    padding-top: 0;
+}
+aside.menu .menu-list {
+    line-height: 1.5;
+}
+aside.menu .menu-label {
+    padding-left: 10px;
+    font-weight: 700;
+}
+.post-btn {
+    background: #2B3A55;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 14px;
+    height: 3rem;
+    line-height: 2.8;
+}
+.post-btn:hover {
+    color: #a2aec7;
+}
+
+.media-left img {
+    border-radius: 50%;
+}
+.media-content p {
+    font-size: 14px;
+    line-height: 2.3;
+    font-weight: 700;
+    color: #777777;
+}
+.media-content span {
+    color: #CE7777;
+}
+
+article.post {
+    margin: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #E6EAEE;
+}
+article.post a {
+    font-weight: bolder;
+    color: #2B3A55;
+}
+article.post a:hover {
+    text-decoration:underline;
+}
+
+article.post:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+.menu-list li{
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin: 1px 0;
+}
+.menu .box {
+    background-color: #CE7777;
+    margin-bottom: 0;
+}
+.tit {
+    margin-top: 1rem;
+}
+.tit p {
+    font-size: 30px;
+    line-height: 2.3;
+    font-weight: 700;
+    color: #777777;
+    text-align: center;
+}
+
+.card-header-title {
+    color: #CE7777;
+    font-weight: 600;
+    border-bottom: 1px solid #E6EAEE;
+}
+
+.card-table {
+    padding: 0.1rem 0.25rem;
+}
+
+.card-table a {
+    color: #2B3A55;
+}
+.card-table a:hover {
+    color: #CE7777;
+}
+
+.card-table td {
+    font-size: 13px;
+    color: #666666;
+}
+
+.img-container {
+    display: flex;
+    justify-content: center;
+    margin: 1px 1px 1px 1px;
+    /*align-items: center;*/
+}
+
+.img-container img {
+    transition: transform 0.2s;
+}
+
+.img-container img:hover {
+    transform: scale(1.1);
+}
+
+/*.menu-list li:first-child{
+    border-top: none;
+    margin-top: 3px;
+}*/
+/*.pnk {
+    color: #CE7777;
+}*/

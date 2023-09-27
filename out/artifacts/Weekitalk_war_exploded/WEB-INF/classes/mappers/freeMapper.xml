@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="free">
+	<!-- 자유게시판 목록 -->
+	<select id="freeList" resultType="kr.co.teaspoon.dto.Free">
+		select * from free order by regdate desc
+	</select>
+	<!-- 글 상세보기 -->
+	<select id="freeDetail" resultType="kr.co.teaspoon.dto.Free">
+		select * from free where bno=#{bno}
+	</select>
+	<!-- 글 수 카운트 -->
+	<select id="totalCount" resultType="integer" >
+		select count(*) from free
+	</select>
+	<insert id="freeInsert">
+		insert into free values (default, #{title}, #{content}, default, 0, 'admin', 0)
+	</insert>
+	<delete id="freeDelete">
+		delete from free where bno=#{bno}
+	</delete>
+	<update id="freeEdit">
+		update free set title=#{title}, content=#{content} where bno=#{bno}
+	</update>
+	<update id="visitCount">
+		update free set visited=visited+1 where bno=#{bno}
+	</update>
+</mapper>

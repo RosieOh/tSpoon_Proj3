@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="survey">
+	<!-- 자유게시판 목록 -->
+	<select id="surveyList" resultType="kr.co.teaspoon.dto.Survey">
+		select * from survey where lev=0 order by regdate desc
+	</select>
+	<!-- 글 상세보기 -->
+	<select id="surveyDetail" resultType="kr.co.teaspoon.dto.Survey">
+		select * from survey where sno=#{sno}
+	</select>
+	<!-- 최신 글 1개 조회 -->
+	<select id="lastSurvey" resultType="kr.co.teaspoon.dto.Survey">
+		SELECT * FROM survey WHERE LEV=0 ORDER BY regdate desc LIMIT 1;
+	</select>
+
+	<!-- 답변 수 카운트 -->
+	<select id="totalCount" resultType="integer" >
+		select count(*) from survey where sno=#{sno}
+	</select>
+	<select id="surveyCount">
+		select count(*) from where sno=#{sno} and ans=#{ans}
+	</select>
+	<insert id="surveyInsert">
+		insert into survey values (default, #{title}, #{q1}, #{q2}, #{q3}, #{q4}, #{q5}, #{q6}, #{q7}, #{q8}, #{q9}, #{q10}, default, default, default, default, 'admin', default, #{content})
+	</insert>
+	<insert id="sanswerInsert">
+		insert into survey values (default, #{title}, #{q1}, #{q2}, #{q3}, #{q4}, #{q5}, #{q6}, #{q7}, #{q8}, #{q9}, #{q10}, default, #{ans}, 1, #{par}, #{author}, default, default)
+	</insert>
+	<select id="ckAuthor" resultType="kr.co.teaspoon.dto.Survey">
+		select * from survey where par=#{par} and author=#{author}
+	</select>
+	<delete id="surveyDelete">
+		delete from survey where sno=#{sno}
+	</delete>
+	<update id="surveyEdit">
+		update survey set title=#{title}, content=#{content}, q1=#{q1}, q2=#{q2}, q3=#{q3}, q4=#{q4}, q5=#{q5}, q6=#{q6}, q7=#{q7}, q8=#{q8}, q9=#{q9}, q10=#{q10}, where sno=#{sno}
+	</update>
+	<update id="visitCount">
+		update survey set visited=visited+1 where sno=#{sno}
+	</update>
+</mapper>

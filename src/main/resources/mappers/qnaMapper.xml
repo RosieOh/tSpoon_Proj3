@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qna">
+    <!--    공지사항 목록 출력-->
+<!--    <select id="qnaList" resultType="kr.co.teaspoon.dto.Qna">-->
+<!--        select * from qnalist1;-->
+<!--    </select>-->
+    <select id="qnaList" resultType="kr.co.teaspoon.dto.Qna">
+        <![CDATA[
+        select * from qnalist1
+        ]]>
+        <where>
+            <if test="searchType != null">
+                <choose>
+                    <when test="searchType == 'title'.toString()">
+                        title LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'.toString()">
+                        content LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+        <![CDATA[
+        LIMIT #{postStart}, #{postCount}
+        ]]>
+    </select>
+    <!-- 리스트에 댓글 수 불러오기 -->
+    <select id="commentCount" resultType="kr.co.teaspoon.dto.Qna">
+        SELECT q.qno, COUNT(qc.cno) AS count
+        FROM qna q
+            LEFT JOIN qna_comment qc ON q.qno = qc.qno
+        GROUP BY q.qno ORDER BY q.resdate;
+    </select>
+    <!--    공지사항 글 상세보기-->
+    <select id="qnaDetail" resultType="kr.co.teaspoon.dto.Qna">
+        select * from qnalist1 where qno=#{qno}
+    </select>
+    <!--    글 수 카운트-->
+<!--    <select id="totalCount" resultType="integer">-->
+<!--        select count(*) from qnalist1-->
+<!--    </select>-->
+    <select id="totalCount" resultType="integer">
+        <![CDATA[
+        select count(*) from qnalist1
+        ]]>
+        <where>
+            <if test="searchType != null">
+                <choose>
+                    <when test="searchType == 'title'.toString()">
+                        title LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'.toString()">
+                        content LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </select>
+    <!--    공지사항 글 작성-->
+    <insert id="qnaInsert">
+        INSERT INTO qna(title, content, author, lev, par,secret) VALUES(#{title}, #{content}, #{author}, #{lev},#{par}, default);
+    </insert>
+    <!--    답변 많은 순서 list -->
+    <select id = "selectBest" resultType="kr.co.teaspoon.dto.Qna">
+        SELECT title, par, qno, MAX(count) as count
+        FROM (
+            SELECT a.title, a.par, a.qno, COUNT(*) as count,
+            MAX(CASE WHEN a.lev = 0 THEN 1 ELSE 0 END) as has_lev_0
+            FROM qna a
+            GROUP BY a.par
+            ) subquery
+        WHERE has_lev_0 = 1
+        GROUP BY title, par
+        ORDER BY count DESC LIMIT 5;
+    </select>
+<!--    조회수 높은 순서 list-->
+    <select id = "selectVisit" resultType="kr.co.teaspoon.dto.Qna">
+        SELECT title, qno, visit FROM qna ORDER BY visit desc LIMIT 5
+    </select>
+    <!--공지사항 글 업데이트-->
+    <update id="qnaInsertUpdate">
+        UPDATE qna SET par=qno WHERE lev=0 and par=0
+    </update>
+    <!--    공지사항 글 삭제-->
+    <delete id="qnaDelete">
+        <choose>
+            <when test="lev == 0">
+                delete from qna where par=#{qno}
+            </when>
+            <otherwise>
+                delete from qna where qno=#{qno}
+            </otherwise>
+        </choose>
+    </delete>
+    <!--    공지사항 글 수정-->
+    <update id="qnaEdit">
+        update qna set title=#{title}, content=#{content} where qno=#{qno}
+    </update>
+    <!--    조회수 증가-->
+    <update id="countUp">
+        update qna set visit = visit+1 where qno=#{qno}
+    </update>
+    <!-- 댓글 리스트-->
+    <select id="qnaCommentList" resultType="kr.co.teaspoon.dto.QnaComment">
+        select * from qnacommentlist where qno=#{qno}
+    </select>
+    <!--    댓글 삽입-->
+    <insert id="commentInsert">
+        INSERT INTO qna_comment(qno, author, content) VALUES(#{qno}, #{author}, #{content});
+    </insert>
+    <!--    댓글 삭제-->
+    <delete id="commentDelete">
+        delete from qna_comment where cno=#{cno}
+    </delete>
+
+    <sql id="criteria">
+        <where>
+            <trim prefixOverrides="OR">
+                <foreach item="type" collection="typeArr">
+                    <trim prefixOverrides="OR">
+                        <choose>
+                            <when test="type == 'T'.toString()">
+                                title LIKE '%' || #{keyword} || '%'
+                            </when>
+                            <when test="type == 'C'.toString()">
+                                content LIKE '%' || #{keyword} || '%'
+                            </when>
+                            <when test="type == 'W'.toString()">
+                                name LIKE '%' || #{keyword} || '%'
+                            </when>
+                        </choose>
+                    </trim>
+                </foreach>
+            </trim>
+        </where>
+    </sql>
+    <select id="getListWithPaging" resultType="kr.co.teaspoon.dto.Board">
+        <![CDATA[
+        select * from qnalist1
+        ]]>
+        <include refid="criteria" />
+        <![CDATA[
+        ORDER BY regdate DESC LIMIT ((#{pageNum} - 1) * #{amount}), #{amount}
+        ]]>
+    </select>
+</mapper>

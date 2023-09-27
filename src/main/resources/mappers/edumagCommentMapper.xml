@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edumagComment">
+    <!-- 댓글 목록 -->
+    <select id="edumagCommentList" resultType="kr.co.teaspoon.dto.EdumagComment">
+        select * from edumagComment where par = #{par} order by regdate desc
+    </select>
+    <insert id="edumagCommentInsert">
+        insert into edumagComment values (default, #{author}, #{content}, default, #{par})
+    </insert>
+    <delete id="edumagCommentDelete">
+        delete from edumagComment where dno=#{dno}
+    </delete>
+    <update id="edumagCommentEdit">
+        update edumagComment set title=#{title}, content=#{content} where dno=#{dno}
+    </update>
+
+
+
+</mapper>

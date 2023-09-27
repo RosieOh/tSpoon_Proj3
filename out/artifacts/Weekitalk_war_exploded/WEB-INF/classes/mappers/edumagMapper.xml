@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edumag">
+    <!-- 교육메거진 목록 -->
+    <select id="edumagList" resultType="kr.co.teaspoon.dto.Edumag">
+        select * from edumag order by resdate desc
+    </select>
+    <!-- 글 상세보기 -->
+    <select id="edumagDetail" resultType="kr.co.teaspoon.dto.Edumag">
+        select * from edumag where no=#{no}
+    </select>
+    <!-- 글 수 카운트 -->
+    <select id="totalCount" resultType="integer" >
+        select count(*) from edumag
+    </select>
+    <insert id="edumagInsert">
+        insert into edumag values (#{link}, default, #{title}, #{content}, default, #{img}, default)
+    </insert>
+    <delete id="edumagDelete">
+        delete from edumag where no=#{no}
+    </delete>
+    <update id="edumagEdit">
+        update edumag set title=#{title}, content=#{content} where no=#{no}
+    </update>
+    <update id="visitCount">
+        update edumag set visited=visited+1 where no=#{no}
+    </update>
+
+    <!-- 댓글 -->
+    <select id="edumagCommentList" resultType="kr.co.teaspoon.dto.EdumagComment">
+        select * from edumagComment where bno = #{no}
+    </select>
+</mapper>

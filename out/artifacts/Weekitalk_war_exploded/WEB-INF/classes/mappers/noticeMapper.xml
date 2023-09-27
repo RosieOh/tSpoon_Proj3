@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice">
+<!--    공지사항 목록 출력-->
+    <select id="noticeList" resultType="kr.co.teaspoon.dto.Notice">
+        select * from notice order by resdate desc;
+    </select>
+<!--    공지사항 글 상세보기-->
+    <select id="noticeDetail" resultType="kr.co.teaspoon.dto.Notice">
+        select * from notice where nno=#{nno}
+    </select>
+<!--    글 수 카운트-->
+    <select id="totalCount" resultType="integer">
+        select count(*) from notice
+    </select>
+<!--    공지사항 글 작성-->
+    <insert id="noticeInsert">
+        INSERT INTO notice VALUES(DEFAULT, #{title}, #{content}, DEFAULT, DEFAULT);
+    </insert>
+<!--    공지사항 글 삭제-->
+    <delete id="noticeDelete">
+        delete from notice where nno=#{nno}
+    </delete>
+<!--    공지사항 글 수정-->
+    <update id="noticeEdit">
+        update notice set title=#{title}, content=#{content} where nno=#{nno}
+    </update>
+<!--    조회수 증가-->
+    <update id="countUp">
+        update notice set visit = visit+1 where nno=#{nno}
+    </update>
+    <sql id="criteria">
+        <where>
+            <trim prefixOverrides="OR">
+                <foreach item="type" collection="typeArr">
+                    <trim prefixOverrides="OR">
+                        <choose>
+                            <when test="type == 'T'.toString()">
+                                title LIKE '%' || #{keyword} || '%'
+                            </when>
+                            <when test="type == 'C'.toString()">
+                                content LIKE '%' || #{keyword} || '%'
+                            </when>
+                        </choose>
+                    </trim>
+                </foreach>
+            </trim>
+        </where>
+    </sql>
+    <select id="getListWithPaging" resultType="kr.co.teaspoon.dto.Board">
+        <![CDATA[
+        select * from notice
+        ]]>
+        <include refid="criteria" />
+        <![CDATA[
+        ORDER BY regdate DESC LIMIT ((#{pageNum} - 1) * #{amount}), #{amount}
+        ]]>
+    </select>
+</mapper>

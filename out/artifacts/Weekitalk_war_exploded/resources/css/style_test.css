@@ -1,0 +1,16 @@
+.navbar-item {
+    padding-right: 40px !important;
+    font-size: large !important;
+}
+
+.navbar-item:hover {
+    color: black !important;
+}
+#carousel-section {
+    padding: 50px 0;
+    margin-bottom: 50px;
+}
+
+#carousel-demo {
+    margin-top: 50px;
+}

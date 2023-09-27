@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice">
+    <!--    공지사항 목록 출력
+        <select id="noticeList" resultType="kr.co.teaspoon.dto.">
+            select * from notice order by resdate desc;
+        </select>-->
+    <select id="noticeList" resultType="kr.co.teaspoon.dto.Notice">
+        <![CDATA[
+        select * from notice
+        ]]>
+        <where>
+            <if test="searchType != null">
+                <choose>
+                    <when test="searchType == 'title'.toString()">
+                        title LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+        <![CDATA[
+        order by resdate desc LIMIT #{postStart}, #{postCount}
+        ]]>
+    </select>
+<!--    리스트에 댓글 수 불러오기-->
+    <select id="commentCount" resultType="kr.co.teaspoon.dto.Notice">
+        SELECT n.nno, COUNT(nc.cno) AS count
+        FROM notice n
+            LEFT JOIN notice_comment nc ON n.nno = nc.nno
+        GROUP BY n.nno;
+    </select>
+<!--    리스트에 최신 글 불러오기-->
+    <select id="newNotice" resultType="kr.co.teaspoon.dto.Notice">
+        SELECT * FROM notice ORDER BY resdate desc LIMIT 5;
+    </select>
+    <!--    공지사항 글 상세보기-->
+    <select id="noticeDetail" resultType="kr.co.teaspoon.dto.Notice">
+        select * from notice where nno=#{nno}
+    </select>
+    <!--    글 수 카운트
+        <select id="totalCount" resultType="integer">
+            select count(*) from notice
+        </select>-->
+    <select id="totalCount" resultType="integer">
+        <![CDATA[
+        select count(*) from notice
+        ]]>
+        <where>
+            <if test="searchType != null">
+                <choose>
+                    <when test="searchType == 'title'.toString()">
+                        title LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'.toString()">
+                        content LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </select>
+    <!--    공지사항 글 작성-->
+    <insert id="noticeInsert">
+        INSERT INTO notice VALUES(DEFAULT, #{title}, #{content}, DEFAULT, DEFAULT);
+    </insert>
+    <!--    공지사항 글 삭제-->
+    <delete id="noticeDelete">
+        delete from notice where nno=#{nno}
+    </delete>
+    <!--    공지사항 글 수정-->
+    <update id="noticeEdit">
+        update notice set title=#{title}, content=#{content} where nno=#{nno}
+    </update>
+    <!--    조회수 증가-->
+    <update id="countUp">
+        update notice set visit = visit+1 where nno=#{nno}
+    </update>
+    <!-- 댓글 리스트-->
+    <select id="noticeCommentList" resultType="kr.co.teaspoon.dto.NoticeComment">
+        select * from noticelist where nno=#{nno}
+    </select>
+<!--    댓글 삽입-->
+    <insert id="commentInsert">
+        INSERT INTO notice_comment(nno, author, content) VALUES(#{nno}, #{author}, #{content});
+    </insert>
+<!--    댓글 삭제-->
+    <delete id="commentDelete">
+        delete from notice_comment where cno=#{cno}
+    </delete>
+<!--    댓글 많은 공지사항-->
+    <select id="selectComment" resultType="kr.co.teaspoon.dto.Notice">
+        SELECT n.title, n.nno
+        FROM notice n
+        JOIN (
+            SELECT nno, COUNT(*) AS comment_count
+            FROM notice_comment
+            GROUP BY nno
+            ORDER BY comment_count DESC
+                LIMIT 5 -- 댓글이 많은 게시글 중에서 5개만 가져옵니다.
+        ) AS top_commented
+        ON n.nno = top_commented.nno;
+    </select>
+    <sql id="criteria">
+        <where>
+            <trim prefixOverrides="OR">
+                <foreach item="type" collection="typeArr">
+                    <trim prefixOverrides="OR">
+                        <choose>
+                            <when test="type == 'T'.toString()">
+                                title LIKE '%' || #{keyword} || '%'
+                            </when>
+                            <when test="type == 'C'.toString()">
+                                content LIKE '%' || #{keyword} || '%'
+                            </when>
+                        </choose>
+                    </trim>
+                </foreach>
+            </trim>
+        </where>
+    </sql>
+    <select id="getListWithPaging" resultType="kr.co.teaspoon.dto.Board">
+        <![CDATA[
+        select * from notice
+        ]]>
+        <include refid="criteria" />
+        <![CDATA[
+        ORDER BY regdate DESC LIMIT ((#{pageNum} - 1) * #{amount}), #{amount}
+        ]]>
+    </select>
+</mapper>

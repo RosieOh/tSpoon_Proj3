@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="booktalk">
+    <!-- 자유게시판 목록 -->
+    <select id="booktalkList" resultType="kr.co.teaspoon.dto.BookTalk">
+        <![CDATA[
+        select * from booktalk
+        ]]>
+        <where>
+            <if test="searchType != null">
+                <choose>
+                    <when test="searchType == 'title'.toString()">
+                        title LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'.toString()">
+                        content LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+        <![CDATA[
+        order by regdate desc LIMIT #{postStart}, #{postCount}
+        ]]>
+    </select>
+    <!-- 글 상세보기 -->
+    <select id="booktalkDetail" resultType="kr.co.teaspoon.dto.BookTalk">
+        select * from booktalk where bno=#{bno}
+    </select>
+    <!-- 글 수 카운트 -->
+    <select id="totalCount" resultType="integer">
+        <![CDATA[
+        select count(*) from booktalk
+        ]]>
+        <where>
+            <if test="searchType != null">
+                <choose>
+                    <when test="searchType == 'title'.toString()">
+                        title LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'.toString()">
+                        content LIKE concat('%', #{searchKeyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </select>
+    <insert id="booktalkInsert">
+        insert into booktalk values (default, #{title}, #{content}, default, 0, #{id}, 0)
+    </insert>
+    <delete id="booktalkDelete">
+        delete from booktalk where bno=#{bno}
+    </delete>
+    <update id="booktalkEdit">
+        update booktalk set title=#{title}, content=#{content} where bno=#{bno}
+    </update>
+    <update id="visitCount">
+        update booktalk set visited=visited+1 where bno=#{bno}
+    </update>
+    <!-- 상위 추천 5개 -->
+    <select id="booktalkBestRecList" resultType="kr.co.teaspoon.dto.BookTalk">
+        select * from booktalk order by rec desc limit 5
+    </select>
+    <!-- 상위 댓글 5개 -->
+    <select id="booktalkBestCmtList" resultType="kr.co.teaspoon.dto.BookTalk">
+        SELECT b.bno, b.title, COUNT(c.bno) AS comment_count
+        FROM booktalk b
+                 JOIN booktalk_comment c ON b.bno = c.bno
+        GROUP BY b.bno, b.title, b.content
+        ORDER BY comment_count DESC
+            LIMIT 5;
+    </select>
+
+    <sql id="criteria">
+        <where>
+            <trim prefixOverrides="OR">
+                <foreach item="type" collection="typeArr">
+                    <trim prefixOverrides="OR">
+                        <choose>
+                            <when test="type == 'T'.toString()">
+                                title LIKE '%' || #{keyword} || '%'
+                            </when>
+                            <when test="type == 'C'.toString()">
+                                content LIKE '%' || #{keyword} || '%'
+                            </when>
+                        </choose>
+                    </trim>
+                </foreach>
+            </trim>
+        </where>
+    </sql>
+    <select id="getListWithPaging" resultType="kr.co.teaspoon.dto.BookTalk">
+        <![CDATA[
+        select * from booktalk
+        ]]>
+        <include refid="criteria" />
+        <![CDATA[
+        ORDER BY resdate DESC LIMIT ((#{pageNum} - 1) * #{amount}), #{amount}
+        ]]>
+    </select>
+
+    <!-- 댓글 리스트-->
+    <select id="booktalkCommentList" resultType="kr.co.teaspoon.dto.BookTalkComment">
+        select * from booktalkcommentlist where bno=#{bno}
+    </select>
+    <!--    댓글 삽입-->
+    <insert id="commentInsert">
+        INSERT INTO booktalk_comment(bno, author, content) VALUES(#{bno}, #{author}, #{content});
+    </insert>
+    <!--    댓글 삭제-->
+    <delete id="commentDelete">
+        delete from booktalk_comment where cno=#{cno}
+    </delete>
+
+    <!--    리스트에 댓글 수 불러오기-->
+    <select id="commentCount" resultType="kr.co.teaspoon.dto.BookTalk">
+        SELECT b.bno, COUNT(bc.bno) AS count
+        FROM booktalk b
+            LEFT JOIN booktalk_comment bc ON b.bno = bc.bno
+        GROUP BY b.bno;
+    </select>
+
+
+    <select id="findBookReco" resultType="kr.co.teaspoon.dto.BookReco">
+        select * from bookreco where bno=#{bno} and id=#{id}
+    </select>
+
+    <select id="memberFindBookReco" resultType="kr.co.teaspoon.dto.BookReco">
+        select * from bookreco where bno=#{bno} and id=#{id}
+    </select>
+
+    <insert id="insertBookReco">
+        insert into bookreco(bno, id, flag) values(#{bno}, #{id}, 1)
+    </insert>
+
+    <delete id="deleteBookReco">
+        delete from bookreco where bno=#{bno} and id=#{id}
+    </delete>
+
+    <!-- 게시글 추천 -->
+    <update id="increaseRec">
+        update booktalk set rec=rec+1 where bno=#{bno}
+    </update>
+    <!-- 게시글 추천 취소 -->
+    <update id="decreaseRec">
+        update booktalk set rec=rec-1 where bno=#{bno}
+    </update>
+</mapper>
